@@ -21,12 +21,15 @@ public class App {
 		System.out.println("2. Exit");
 	}
 	
-	public static void adminMenu() {
-		System.out.println("Hello System Administrator, welcome to the admin panel! Please choose what you would like to do from the options below: \n");
-		System.out.println("1. Add New Use");
+	public static void useMenu() {
+		System.out.println("Hello, welcome to the command panel! Please choose what you would like to do from the options below: \n");
+		System.out.println("1. Add New User");
 		System.out.println("2. Update User Information");
 		System.out.println("3. Remove User");
-		System.out.println("4. Log Out");
+		System.out.println("4. Add New Item");
+		System.out.println("5. Update Item Information");
+		System.out.println("6. Remove Item");
+		System.out.println("7. Log Out");
 		
 	}
 	
@@ -37,22 +40,17 @@ public class App {
 	public static void staffMenu() {
 		
 	}
-	
+
 	public static void main(String[] args) throws SQLException {
 		
-		//connection to mongodb
-		String uri = "";
-        try (MongoClient mongoClient = MongoClients.create(uri)) {
-            MongoDatabase database = mongoClient.getDatabase("sample_mflix");
-            MongoCollection<Document> collection = database.getCollection("movies");
-            Document doc = collection.find(eq("title", "Back to the Future")).first();
-            if (doc != null) {
-                System.out.println(doc.toJson());
-            } else {
-                System.out.println("No matching documents found.");
-            }
-        }
+		LoginSystem loginsys = LoginSystem.getInstance();
+		loginsys.establishConnection();
+		
+		InventoryDatabase invdatabase = InventoryDatabase.getInstance();
+		invdatabase.establishConnection();
+		
         
+		/*
         //connection to mysql
         String url = "";
         String user = "";
@@ -68,9 +66,15 @@ public class App {
         {
         	System.out.println(rs.getString(""));
         }
-        
+        */
+		
 		boolean signedIn = false;
 		boolean loggedOut = true;
+		String permission = "";
+		
+		//Global variables to remember the info of the user currently logged in.
+		String liID = "";
+		String liPASS = "";
 		
 		
 		Scanner input = new Scanner(System.in);
@@ -87,27 +91,34 @@ public class App {
 					
 					System.out.println("Please enter your 7-digit User ID Number: ");
 					
-					int id = input.nextInt();
+					liID = input.next();
+					input.nextLine();
 					
 					//Check for id in database
 					
 					System.out.println("Please enter your password: ");
 					
-					String password = input.next();
+					liPASS = input.next();
 					input.nextLine();
 					
+					
 					//Check if password connected to id is valid. If not, try again.
-					
-					//if valid, break
-					if (id == 1001001 && password.equals("1234")) {
+					if (loginsys.login(liID, liPASS).equals("admin")) {
+						permission = "admin";
+						signedIn = true;
+
+						break;
 						
-					System.out.println("Logging in as... ");
-					
-					signedIn = true;
-					
 					}
 					
-					break;
+					if (loginsys.login(liID, liPASS).equals("staff")) {
+						permission = "staff";
+						signedIn = true;
+
+						break;
+						
+					}
+					
 					
 				}
 				
@@ -132,7 +143,7 @@ public class App {
 			//currently giving me an error. Gotta fix over the weekend.
 			while(signedIn == true) {
 				
-				adminMenu();
+				useMenu();
 				
 				int choice = input.nextInt();
 				
@@ -141,8 +152,39 @@ public class App {
 					case 1:
 						
 					{
+
+						if (!permission.equals("admin")) {
+							System.out.println("You do not have permission to add users. Please contact a System Administrator.");
+							break;
+						}
 						
-						System.out.println("You chose 1");
+						System.out.println("Please enter the new user information: ");
+						
+						System.out.println("User ID:");
+						String userid = input.next();
+						input.nextLine();
+						
+						System.out.println("Password: ");
+						String password = input.next();
+						input.nextLine();
+						
+						System.out.println("First Name: ");
+						String firstname = input.next();
+						input.nextLine();
+						
+						System.out.println("Last Name: ");
+						String lastname = input.next();
+						input.nextLine();
+						
+						System.out.println("Email Address: ");
+						String email = input.next();
+						input.nextLine();
+						
+						System.out.println("User Type (staff/manager/admin): ");
+						String usertype = input.next();
+						input.nextLine();
+						
+						loginsys.addUser(userid, password, firstname, lastname, email, usertype);
 						break;
 						
 					}
@@ -151,8 +193,50 @@ public class App {
 						
 					{
 						
-						System.out.println("You chose 2");
-						break;
+						if (!permission.equals("admin") && !permission.equals("manager")) {
+							
+							
+							System.out.println("Update your information: ");
+							System.out.println("What would you like to update? (password/email): ");
+							System.out.println("Please contact a Manager or System Administrator to update any other information.");
+							
+							String decision = input.next();
+							input.nextLine();
+							
+							System.out.println("Enter updated information: ");
+							
+							String update = input.next();
+							input.nextLine();
+							
+							loginsys.updateUser(liID, decision, update);
+							
+							
+							break;
+							
+						}
+						
+						else {
+							
+							System.out.println("Enter the User ID of the user whose information you wish to update: ");
+							
+							String userid = input.next();
+							input.nextLine();
+							
+							System.out.println("What information would you like to update? (id, password, firstname, lastname, email, usertype)");
+							
+							String decision = input.next();
+							input.nextLine();
+							
+							System.out.println("Enter updated information: ");
+							
+							String update = input.next();
+							input.nextLine();
+							
+							loginsys.updateUser(userid, decision, update);
+							
+							break;
+						}
+					
 					
 					}	
 					
@@ -160,11 +244,59 @@ public class App {
 					
 					{
 						
+						if (!permission.equals("admin")) {
+							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							break;
+						}
+						
+						System.out.println("Please enter the User ID of the user you wish to remove: ");
+						String id = input.next();
+						input.nextLine();
+						
+						System.out.println("You are attempting to remove the following document: " + loginsys.findUser(id));
+						System.out.println("Confirm deletion of document: (Y/N)");
+					
+						
+						String confirmation = input.next();
+						input.nextLine();
+						
+						if (confirmation.equals("Y")) {
+							loginsys.removeUser(id);
+							System.out.println("User deleted.");
+						}
+						
+						if(confirmation.equals("N")) {
+							System.out.println("Deletion process has been halted. Returning to main menu");
+						}
+						
+						
+						break;
 						
 					}
 					
 					case 4:
 						
+					{
+						
+						
+					}
+					
+					case 5:
+					
+					{
+						
+						
+					}
+
+					case 6:
+					
+					{
+						
+						
+					}
+
+					case 7:
+					
 					{
 						
 						System.out.println("Logging out...");
