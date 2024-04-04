@@ -29,7 +29,8 @@ public class App {
 		System.out.println("4. Add New Item");
 		System.out.println("5. Update Item Information");
 		System.out.println("6. Remove Item");
-		System.out.println("7. Log Out");
+		System.out.println("7. Search for item");
+		System.out.println("8. Log Out");
 		
 	}
 	
@@ -50,23 +51,6 @@ public class App {
 		invdatabase.establishConnection();
 		
         
-		/*
-        //connection to mysql
-        String url = "";
-        String user = "";
-        String sqlpassword = "";
-        
-        Connection myConn = DriverManager.getConnection(url,user,sqlpassword);
-        Statement myStatement = myConn.createStatement();
-        String sql = "";
-        ResultSet rs = myStatement.executeQuery(sql);
-        
-        while (rs.next())
-        	
-        {
-        	System.out.println(rs.getString(""));
-        }
-        */
 		
 		boolean signedIn = false;
 		boolean loggedOut = true;
@@ -278,12 +262,55 @@ public class App {
 						
 					{
 						
+						System.out.println("Enter ID of item: ");
+						String id = input.next();
+						input.nextLine();
 						
+						System.out.println("Enter name of item: ");
+						String name = input.next();
+						input.nextLine();
+						
+						System.out.println("Enter category of item: ");
+						String category = input.next();
+						input.nextLine();
+						
+						System.out.println("Enter quantity of item: ");
+						String quantity = input.next();
+						input.nextLine();
+						
+						System.out.println("Enter location of item: ");
+						String location = input.next();
+						input.nextLine();
+						
+						System.out.println("Enter supplier of item: ");
+						String supplier = input.next();
+						input.nextLine();
+						
+				
+						invdatabase.addItem(id, name, category, quantity, location, supplier);
+						break;
+						
+				
 					}
-					
+					//update item
 					case 5:
 					
 					{
+						
+						System.out.println("Enter ID of item you want to update: ");
+						int id = input.nextInt();
+						input.nextLine();
+						
+						System.out.println("What would you like to update? (name/category/quantity/location/supplier): ");
+						String updateChoice = input.next();
+						input.nextLine();
+						
+						System.out.println("Enter new value: ");
+						String newVal = input.next();
+						input.nextLine();
+						
+						invdatabase.updateItem(id, updateChoice, newVal);
+						break;
 						
 						
 					}
@@ -291,11 +318,31 @@ public class App {
 					case 6:
 					
 					{
+					
+						System.out.println("Enter the ID of the item you want to remove: ");
+						int id = input.nextInt();
+						input.nextLine();
+						
+						invdatabase.removeItem(id);
+						break;
 						
 						
 					}
-
+					
 					case 7:
+						
+					{
+						
+						System.out.println("Enter the ID of the item you want to search: ");
+						int id = input.nextInt();
+						input.nextLine();
+						
+						invdatabase.searchItem(id);
+						break;
+						
+					}
+
+					case 8:
 					
 					{
 						

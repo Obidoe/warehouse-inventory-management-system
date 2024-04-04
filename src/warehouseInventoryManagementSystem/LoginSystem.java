@@ -70,17 +70,10 @@ public class LoginSystem {
 	}
 	//Add new user document to collection
 	public void addUser(String id, String password, String firstName, String lastName, String email, String userType) {
+		User user = new User(id, password, firstName, lastName, email, userType);
 		
 		//inserts a new document into the collection. Appends relevant information
-		collection.insertOne(new Document()
-				.append("_id", new ObjectId())
-				.append("id", id)
-				.append("password", password)
-				.append("firstname", firstName)
-				.append("lastname", lastName)
-				.append("email", email)
-				.append("usertype", userType)
-				);
+		collection.insertOne(user.toDoc());
 		
 	}
 	

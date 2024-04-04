@@ -1,5 +1,8 @@
 package warehouseInventoryManagementSystem;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
 public class User {
 
 	String userID;
@@ -8,6 +11,15 @@ public class User {
 	String lastName;
 	String email;
 	String userType;
+	
+	public User (String id, String pass, String fName, String lName, String email, String userType) {
+		this.userID = id;
+		this.password = pass;
+		this.firstName = fName;
+		this.lastName = lName;
+		this.email = email;
+		this.userType = userType;
+	}
 
 	public String getUserID() {
 		return userID;
@@ -57,7 +69,15 @@ public class User {
 		this.userType = type;
 	}
 	
-	public String toString () {
-		return "User ID: " + userID + ", Password: " + password + ", First Name: " + firstName + ", Last Name: " + lastName + ", Email Address: " + email + ",User Type: " + userType;
+	public Document toDoc () {
+		return new Document()
+				.append("_id", new ObjectId())
+				.append("id", userID)
+				.append("password", password)
+				.append("firstname", firstName)
+				.append("lastname", lastName)
+				.append("email", email)
+				.append("usertype", userType);
+				
 	}
 }
