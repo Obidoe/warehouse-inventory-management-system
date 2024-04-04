@@ -42,17 +42,21 @@ public class InventoryDatabase {
 	}
 	
 	public void addItem(String id, String name, String category, String quantity, String location, String supplier) {
+		
+		
+		//Using item object for modularity. Currently, just passing through values would be enough, item object will be useful for expansion of application.
+		Item item = new Item(id, name, category, quantity, location, supplier);
 		 
 		  String sql = " insert into item (itemID, itemName, category, quantity, location, supplier)"
 	        	    + " values (?, ?, ?, ?, ?, ?)";
 		  try {
 		  PreparedStatement preparedStmt = myConn.prepareStatement(sql);
-		  preparedStmt.setString (1, id);
-		  preparedStmt.setString (2, name);
-		  preparedStmt.setString (3, category);
-		  preparedStmt.setString (4, quantity);
-		  preparedStmt.setString (5, location);
-		  preparedStmt.setString (6, supplier);
+		  preparedStmt.setString (1, item.getID());
+		  preparedStmt.setString (2, item.getName());
+		  preparedStmt.setString (3, item.getCategory());
+		  preparedStmt.setString (4, item.getQuantity());
+		  preparedStmt.setString (5, item.getLocation());
+		  preparedStmt.setString (6, item.getSupplier());
 	        
 	      preparedStmt.executeUpdate();
 		  } catch (Exception e)

@@ -13,6 +13,9 @@ import java.sql.*;
 public class App {
 	
 
+
+	static String permission = "";
+	
 	//this menu is displayed as the program is launched. A user is required to sign in before they can access anything else. They also have the option to exit.
 	public static void launchMenu() { 
 		System.out.println("Welcome to the Warehouse Inventory Management System.");
@@ -22,6 +25,7 @@ public class App {
 	}
 	
 	public static void useMenu() {
+		System.out.println("[Currently signed in as: " + permission + "]");
 		System.out.println("Hello, welcome to the command panel! Please choose what you would like to do from the options below: \n");
 		System.out.println("1. Add New User");
 		System.out.println("2. Update User Information");
@@ -54,7 +58,6 @@ public class App {
 		
 		boolean signedIn = false;
 		boolean loggedOut = true;
-		String permission = "";
 		
 		//Global variables to remember the info of the user currently logged in.
 		String liID = "";
@@ -73,7 +76,7 @@ public class App {
 				//Login
 				if (choice == 1) {
 					
-					System.out.println("Please enter your 7-digit User ID Number: ");
+					System.out.println("Please enter your User ID Number: ");
 					
 					liID = input.next();
 					input.nextLine();
@@ -87,21 +90,14 @@ public class App {
 					
 					
 					//Check if password connected to id is valid. If not, try again.
-					if (loginsys.login(liID, liPASS).equals("admin")) {
-						permission = "admin";
-						signedIn = true;
-
-						break;
-						
-					}
 					
-					if (loginsys.login(liID, liPASS).equals("staff")) {
-						permission = "staff";
-						signedIn = true;
-
-						break;
+						permission = loginsys.login(liID, liPASS);
+						if (permission != null) {
+							signedIn = true;
+	
+							break;
+						}
 						
-					}
 					
 					
 				}
@@ -260,6 +256,11 @@ public class App {
 					
 					case 4:
 						
+						if (!permission.equals("admin")) {
+							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							break;
+						}
+						
 					{
 						
 						System.out.println("Enter ID of item: ");
@@ -294,6 +295,11 @@ public class App {
 					}
 					//update item
 					case 5:
+						
+						if (!permission.equals("admin")) {
+							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							break;
+						}
 					
 					{
 						
@@ -316,6 +322,11 @@ public class App {
 					}
 
 					case 6:
+						
+						if (!permission.equals("admin")) {
+							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							break;
+						}
 					
 					{
 					

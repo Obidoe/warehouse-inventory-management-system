@@ -58,13 +58,20 @@ public class LoginSystem {
 		
 	    Document doc = collection.find(eq("id", id)).first();
 	    
+	    //If user enters an id that does not exist, this prevents an error.
+	    if (doc == null) {
+	    	//I chose this message instead of "ID does not exist" as a security measure.
+	    	System.out.println("Incorrect Username or Password.");
+	    	return null;
+	    }
+	    
 	    
 	    //checks that the given password is equal to the value stored in the document
 	    if (doc.getString("password").equals(pass)) {
 	    	return (doc.getString("usertype"));
 	    } else {
-	        System.out.println("No matching documents found.");
-
+	        System.out.println("Incorrect Username or Password.");
+	        
 			return null;
 	    }
 	}
