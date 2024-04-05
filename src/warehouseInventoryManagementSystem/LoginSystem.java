@@ -2,6 +2,10 @@ package warehouseInventoryManagementSystem;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -102,6 +106,21 @@ public class LoginSystem {
 		Document query = new Document().append("id", id);
 		Bson updatedInfo = Updates.set(choice, update);
 		collection.updateOne(query, updatedInfo);
+		
+		
+	}
+	
+	public void logUserActions(String id, String action, String value) {
+		
+		String timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+		MongoCollection<Document> activities = database.getCollection("user_activities");
+		Document log = new Document()
+				.append("_id", new ObjectId())
+				.append("timestamp", timestamp)
+				.append("user_id", id)
+				.append("action", action)
+				.append("details", value);
+		activities.insertOne(log);
 		
 		
 	}

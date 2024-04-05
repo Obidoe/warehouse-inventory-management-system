@@ -36,6 +36,7 @@ public class App {
 		System.out.println("7. Search for item");
 		System.out.println("8. Log Out");
 		
+		
 	}
 	
 	public static void managerMenu() {
@@ -62,7 +63,7 @@ public class App {
 		//Global variables to remember the info of the user currently logged in.
 		String liID = "";
 		String liPASS = "";
-		
+	
 		
 		Scanner input = new Scanner(System.in);
 			
@@ -125,6 +126,12 @@ public class App {
 				
 				useMenu();
 				
+				
+				invdatabase.notification();
+				
+				invdatabase.printReport("'Kraft'");
+				//Low Stock Level notification
+				
 				int choice = input.nextInt();
 				
 				switch(choice) {
@@ -165,6 +172,8 @@ public class App {
 						input.nextLine();
 						
 						loginsys.addUser(userid, password, firstname, lastname, email, usertype);
+						
+						loginsys.logUserActions(liID, "Add User", "User ID: " + userid + "\nUser Full Name: " + firstname + " " + lastname);
 						break;
 						
 					}
@@ -173,6 +182,10 @@ public class App {
 						
 					{
 						
+						String updateChoice = "";
+						String userid = liID;
+						String update = "";
+						
 						if (!permission.equals("admin") && !permission.equals("manager")) {
 							
 							
@@ -180,18 +193,18 @@ public class App {
 							System.out.println("What would you like to update? (password/email): ");
 							System.out.println("Please contact a Manager or System Administrator to update any other information.");
 							
-							String decision = input.next();
+							updateChoice = input.next();
 							input.nextLine();
 							
 							System.out.println("Enter updated information: ");
 							
-							String update = input.next();
+							update = input.next();
 							input.nextLine();
 							
-							loginsys.updateUser(liID, decision, update);
+							loginsys.updateUser(liID, updateChoice, update);
 							
 							
-							break;
+							
 							
 						}
 						
@@ -199,23 +212,28 @@ public class App {
 							
 							System.out.println("Enter the User ID of the user whose information you wish to update: ");
 							
-							String userid = input.next();
+							userid = input.next();
 							input.nextLine();
 							
 							System.out.println("What information would you like to update? (id, password, firstname, lastname, email, usertype)");
 							
-							String decision = input.next();
+							updateChoice = input.next();
 							input.nextLine();
 							
 							System.out.println("Enter updated information: ");
 							
-							String update = input.next();
+							update = input.next();
 							input.nextLine();
 							
-							loginsys.updateUser(userid, decision, update);
+							loginsys.updateUser(userid, updateChoice, update);
 							
-							break;
+							
+							
+							
 						}
+						
+						loginsys.logUserActions(liID, "Update User: " + updateChoice, "User ID: " + userid + "\nNew Value: " + update);
+						break;
 					
 					
 					}	
@@ -243,6 +261,7 @@ public class App {
 						if (confirmation.equals("Y")) {
 							loginsys.removeUser(id);
 							System.out.println("User deleted.");
+							loginsys.logUserActions(liID, "Remove User", "User ID: " + id);
 						}
 						
 						if(confirmation.equals("N")) {
@@ -257,7 +276,7 @@ public class App {
 					case 4:
 						
 						if (!permission.equals("admin")) {
-							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							System.out.println("You do not have permission to add items. Please contact a System Administrator.");
 							break;
 						}
 						
@@ -289,6 +308,8 @@ public class App {
 						
 				
 						invdatabase.addItem(id, name, category, quantity, location, supplier);
+						
+						loginsys.logUserActions(liID, "Add Item", "Item ID: " + id + "\nItem Name: " + name);
 						break;
 						
 				
@@ -297,7 +318,7 @@ public class App {
 					case 5:
 						
 						if (!permission.equals("admin")) {
-							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							System.out.println("You do not have permission to update item information. Please contact a System Administrator.");
 							break;
 						}
 					
@@ -316,6 +337,8 @@ public class App {
 						input.nextLine();
 						
 						invdatabase.updateItem(id, updateChoice, newVal);
+						
+						loginsys.logUserActions(liID, "Update Item: " + updateChoice, "Item ID: " + id + "\nNew Value: " + newVal);
 						break;
 						
 						
@@ -324,7 +347,7 @@ public class App {
 					case 6:
 						
 						if (!permission.equals("admin")) {
-							System.out.println("You do not have permission to remove users. Please contact a System Administrator.");
+							System.out.println("You do not have permission to remove items. Please contact a System Administrator.");
 							break;
 						}
 					
@@ -335,6 +358,7 @@ public class App {
 						input.nextLine();
 						
 						invdatabase.removeItem(id);
+						loginsys.logUserActions(liID, "Remove Item", "Item ID: " + id);
 						break;
 						
 						
@@ -349,6 +373,10 @@ public class App {
 						input.nextLine();
 						
 						invdatabase.searchItem(id);
+						System.out.println("\nPress Enter to continue...");
+						input.nextLine();
+						
+						loginsys.logUserActions(liID, "Search for item", "Item ID: " + id);
 						break;
 						
 					}

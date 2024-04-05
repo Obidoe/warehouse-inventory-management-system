@@ -143,6 +143,58 @@ public class InventoryDatabase {
 		
 	}
 	
+	//Have to use observer
+	//Idea: Get all quantities, if any are below certain threshold, display notification
+	public void notification() {
+		
+		try {
+		Statement stmt = myConn.createStatement();
+		String sql = "select * from item";
+		ResultSet rs = stmt.executeQuery(sql);
+		
+		System.out.println("\nLow stock notifications: ");
+		while (rs.next()) {
+			if (rs.getInt(4) < 3) {
+				System.out.println(rs.getString(6) + ", your product: " + rs.getString(2) + " has low stock. Current stock is: " + rs.getInt(4));
+			}
+		}
+		} catch (Exception e) 
+		 {System.err.println("Got an exception! ");
+	      System.err.println(e.getMessage());}
+		
+		
+	}
+	
+	
+	//Prints a summary/report of a specific supplier's inventory
+	public void printReport(String supplier) {
+		
+		try {
+			Statement stmt = myConn.createStatement();
+			String sql = "select * from item where supplier = " + supplier;
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			System.out.println("\nInventory Summary Report for " + supplier + ": ");
+			while (rs.next()) {
+				int itemid = rs.getInt(1);
+				String itemname = rs.getString(2);
+				String category = rs.getString(3);
+				int quantity = rs.getInt(4);
+				String location = rs.getString(5);
+				
+				System.out.println("");
+				System.out.println("Item ID: " + itemid);
+				System.out.println("Item Name: " + itemname);
+				System.out.println("Category: " + category);
+				System.out.println("Quantity: " + quantity);
+				System.out.println("Location: " + location);
+			}
+			} catch (Exception e) 
+			 {System.err.println("Got an exception! ");
+		      System.err.println(e.getMessage());}
+		
+	}
+	
 	public void closeConnection() throws SQLException {
 		myConn.close();
 	}
