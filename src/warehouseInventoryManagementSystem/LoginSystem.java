@@ -4,7 +4,6 @@ import static com.mongodb.client.model.Filters.eq;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -16,8 +15,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 
+
+//Database handler for users using noSQL (MongoDB)
 public class LoginSystem {
-	//Database handler for users using noSQL (MongoDB)
 		
 	//connection string for MongoDB
 	String uri = "";
@@ -36,7 +36,7 @@ public class LoginSystem {
 	}
 	
 
-	//connection to mongodb
+	//Establishes connection to mongoDB and declares the main collection used. Collection could be set in each method, but since this application primarily uses "users", I included it here.
 	public void establishConnection() {
 		
 		MongoClient mongoClient = MongoClients.create(uri);
@@ -45,7 +45,7 @@ public class LoginSystem {
 		
 	}
 	
-	//prints user information (currently using sample database)
+	//Test Code | Not Part of actual application
 	public String findUser(String id) {
 		
 		Document doc = collection.find(eq("id", id)).first();
@@ -57,7 +57,7 @@ public class LoginSystem {
 		
 	}
 	
-	//taking id as input, testing if that doc has the password then returns the user type
+	//Checks user information in the database and sees if it can find a match to the id and password passed in as parameters.
 	public String login(String id, String pass) {
 		
 	    Document doc = collection.find(eq("id", id)).first();
@@ -69,7 +69,6 @@ public class LoginSystem {
 	    	return null;
 	    }
 	    
-	    
 	    //checks that the given password is equal to the value stored in the document
 	    if (doc.getString("password").equals(pass)) {
 	    	return (doc.getString("usertype"));
@@ -79,6 +78,8 @@ public class LoginSystem {
 			return null;
 	    }
 	}
+	
+
 	//Add new user document to collection
 	public void addUser(String id, String password, String firstName, String lastName, String email, String userType) {
 		User user = new User(id, password, firstName, lastName, email, userType);
@@ -94,7 +95,6 @@ public class LoginSystem {
 		//finds the first document that matches this id
 		Bson query = eq("id", id);
 		
-		
 		collection.deleteOne(query);
 		
 	}
@@ -107,9 +107,9 @@ public class LoginSystem {
 		Bson updatedInfo = Updates.set(choice, update);
 		collection.updateOne(query, updatedInfo);
 		
-		
 	}
 	
+	//Logs user actions. 
 	public void logUserActions(String id, String action, String value) {
 		
 		String timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());

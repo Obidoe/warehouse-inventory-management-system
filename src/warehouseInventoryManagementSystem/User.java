@@ -69,6 +69,7 @@ public class User {
 		this.userType = type;
 	}
 	
+	//Creates a document to be used by LoginSystem.java and MongoDB. This appends all the relevant information pertaining to a user into a document.
 	public Document toDoc () {
 		return new Document()
 				.append("_id", new ObjectId())

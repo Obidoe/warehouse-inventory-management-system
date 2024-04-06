@@ -2,6 +2,8 @@ package warehouseInventoryManagementSystem;
 
 public class Item {
 	
+	//I created this class simply for modularity and potential expansion in the future.
+	
 	String id;
 	String name;
 	String category;

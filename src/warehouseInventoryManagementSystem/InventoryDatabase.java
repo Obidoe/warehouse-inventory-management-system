@@ -4,11 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
+//Database handler for inventory using mySQL.
 public class InventoryDatabase {
-	//Database handler for inventory using mySQL.
 	
 	//Singleton Implementation
 	private static InventoryDatabase instance;
@@ -24,29 +23,30 @@ public class InventoryDatabase {
 	}
 	
 	
-	
+	 //connection to mysql
 	public void establishConnection() {
 		
-		 //connection to mysql
+		
         String url = "";
         String user = "";
         String sqlpassword = "";
         
         try {
 			myConn = DriverManager.getConnection(url,user,sqlpassword);
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-		}
+    	} catch (Exception e) 
+		 {System.err.println("Got an exception! ");
+	      System.err.println(e.getMessage());}
 		
 	}
 	
+	//Adds a new item into the mysql database using prepared statements and taking info from item object.
 	public void addItem(String id, String name, String category, String quantity, String location, String supplier) {
 		
 		
 		//Using item object for modularity. Currently, just passing through values would be enough, item object will be useful for expansion of application.
 		Item item = new Item(id, name, category, quantity, location, supplier);
 		 
+		//sql query
 		  String sql = " insert into item (itemID, itemName, category, quantity, location, supplier)"
 	        	    + " values (?, ?, ?, ?, ?, ?)";
 		  try {
@@ -59,18 +59,13 @@ public class InventoryDatabase {
 		  preparedStmt.setString (6, item.getSupplier());
 	        
 	      preparedStmt.executeUpdate();
-		  } catch (Exception e)
-		  {
-			  System.err.println("Got an exception!");
-			  // printStackTrace method 
-			  // prints line numbers + call stack
-			  e.printStackTrace();
-			  // Prints what exception has been thrown 
-			  System.out.println(e); 
-			  }
+			} catch (Exception e) 
+			 {System.err.println("Got an exception! ");
+		      System.err.println(e.getMessage());}
 		
 	}
 	
+	//removes an item from the database based on the id given
 	public void removeItem(int id) {
 		
 		String sql = "delete from item where itemID = " + id;
@@ -83,9 +78,9 @@ public class InventoryDatabase {
 		
 	}
 	
+	//updates item information
 	public void updateItem(int id, String choice, String newVal) {
 		
-		 // create the java mysql update preparedstatement
 	      String sql = "update item set " + choice + "= ? where itemID = ?";
 	      
 	      try {
@@ -101,7 +96,6 @@ public class InventoryDatabase {
 	    	  preparedStmt.setInt(2, id);
 	      }
 
-	      // execute the java preparedstatement
 	      preparedStmt.executeUpdate();
 	      } catch (Exception e) 
 	      {System.err.println("Got an exception! ");
@@ -132,10 +126,7 @@ public class InventoryDatabase {
 			System.out.println("Location: " + location);
 			System.out.println("Supplier: " + supplier);
 			
-			
 		}
-		
-		
 		
 		} catch (Exception e) 
 		 {System.err.println("Got an exception! ");
@@ -143,8 +134,7 @@ public class InventoryDatabase {
 		
 	}
 	
-	//Have to use observer
-	//Idea: Get all quantities, if any are below certain threshold, display notification
+	//Notification for low stock. Originally planned on using observer, however for this application it would just over complicate things. Clients aren't really featured in this specific application.
 	public void notification() {
 		
 		try {
@@ -162,9 +152,7 @@ public class InventoryDatabase {
 		 {System.err.println("Got an exception! ");
 	      System.err.println(e.getMessage());}
 		
-		
 	}
-	
 	
 	//Prints a summary/report of a specific supplier's inventory
 	public void printReport(String supplier) {
@@ -193,10 +181,6 @@ public class InventoryDatabase {
 			 {System.err.println("Got an exception! ");
 		      System.err.println(e.getMessage());}
 		
-	}
-	
-	public void closeConnection() throws SQLException {
-		myConn.close();
 	}
 	
 	

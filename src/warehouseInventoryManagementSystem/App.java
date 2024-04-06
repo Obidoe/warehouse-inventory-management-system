@@ -2,19 +2,11 @@ package warehouseInventoryManagementSystem;
 
 import java.util.Scanner;
 
-import static com.mongodb.client.model.Filters.eq;
-import org.bson.Document;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import java.sql.*;
 
 public class App {
 	
-
-
-	static String permission = "";
+	private static String permission = "";
 	
 	//this menu is displayed as the program is launched. A user is required to sign in before they can access anything else. They also have the option to exit.
 	public static void launchMenu() { 
@@ -24,6 +16,7 @@ public class App {
 		System.out.println("2. Exit");
 	}
 	
+	//this menu is displayed once the user is logged in. Certain actions require certain permissions.
 	public static void useMenu() {
 		System.out.println("[Currently signed in as: " + permission + "]");
 		System.out.println("Hello, welcome to the command panel! Please choose what you would like to do from the options below: \n");
@@ -34,18 +27,10 @@ public class App {
 		System.out.println("5. Update Item Information");
 		System.out.println("6. Remove Item");
 		System.out.println("7. Search for item");
-		System.out.println("8. Log Out");
-		
-		
+		System.out.println("8. Print Report");
+		System.out.println("9. Log Out");
 	}
 	
-	public static void managerMenu() {
-		
-	}
-	
-	public static void staffMenu() {
-		
-	}
 
 	public static void main(String[] args) throws SQLException {
 		
@@ -55,8 +40,7 @@ public class App {
 		InventoryDatabase invdatabase = InventoryDatabase.getInstance();
 		invdatabase.establishConnection();
 		
-        
-		
+		//booleans for while loops
 		boolean signedIn = false;
 		boolean loggedOut = true;
 		
@@ -64,7 +48,8 @@ public class App {
 		String liID = "";
 		String liPASS = "";
 	
-		
+		//System.in shouldn't be closed, unless its end of the file which would close the scanner regardless.
+		@SuppressWarnings("resource")
 		Scanner input = new Scanner(System.in);
 			
 			//This while loop pertains to the launch menu and logging in to the system.
@@ -119,23 +104,20 @@ public class App {
 			
 			}
 			
-			//This loop handles everything that happens while logged in. First we check to see what type of user has logged into the system, then we display the menu pertaining to the type.
-			
-			//currently giving me an error. Gotta fix over the weekend.
+			//This loop handles everything that happens while logged in. 
+
 			while(signedIn == true) {
 				
 				useMenu();
-				
-				
+			
+				//Low Stock Level notification. Displays when the quantity is below a certain threshold.
 				invdatabase.notification();
-				
-				invdatabase.printReport("'Kraft'");
-				//Low Stock Level notification
 				
 				int choice = input.nextInt();
 				
 				switch(choice) {
 				
+					//Adds a new user into the MongoDB database
 					case 1:
 						
 					{
@@ -178,6 +160,7 @@ public class App {
 						
 					}
 					
+					//Updates user information
 					case 2:
 						
 					{
@@ -186,6 +169,7 @@ public class App {
 						String userid = liID;
 						String update = "";
 						
+						//Staff can only update their own password and email. Anything else must be done by a manager or admin
 						if (!permission.equals("admin") && !permission.equals("manager")) {
 							
 							
@@ -208,6 +192,7 @@ public class App {
 							
 						}
 						
+						//This is the block of code for managers/admins
 						else {
 							
 							System.out.println("Enter the User ID of the user whose information you wish to update: ");
@@ -238,6 +223,7 @@ public class App {
 					
 					}	
 					
+					//Removes a user from the MongoDB database
 					case 3:
 					
 					{
@@ -273,6 +259,7 @@ public class App {
 						
 					}
 					
+					//Adds a new item to the mySQL database
 					case 4:
 						
 						if (!permission.equals("admin")) {
@@ -314,7 +301,8 @@ public class App {
 						
 				
 					}
-					//update item
+					
+					//update item information
 					case 5:
 						
 						if (!permission.equals("admin")) {
@@ -344,6 +332,8 @@ public class App {
 						
 					}
 
+					
+					//Removes an item specified from the item id, from the mySQL database.
 					case 6:
 						
 						if (!permission.equals("admin")) {
@@ -364,6 +354,7 @@ public class App {
 						
 					}
 					
+					//Searches for an item and displays the info of that item
 					case 7:
 						
 					{
@@ -381,10 +372,26 @@ public class App {
 						
 					}
 
+					//Prints an inventory report of a specific supplier
 					case 8:
 					
 					{
+						System.out.println("Please enter the name of the supplier: ");
+						String supplier = input.next();
+						input.nextLine();
+
+						invdatabase.printReport("'"+supplier+"'");
+
+						loginsys.logUserActions(liID, "Generate Report", "For supplier: " + supplier);
 						
+						break;
+					}
+					
+					//logs the user out of the program, exiting.
+					case 9: 
+						
+					{
+
 						System.out.println("Logging out...");
 						
 						signedIn = false;
