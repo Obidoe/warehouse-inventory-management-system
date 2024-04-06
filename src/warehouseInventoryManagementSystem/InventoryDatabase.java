@@ -27,9 +27,9 @@ public class InventoryDatabase {
 	public void establishConnection() {
 		
 		
-        String url = "jdbc:mysql://localhost/inventory";
-        String user = "root";
-        String sqlpassword = "2g01sE8j2xfU";
+        String url = "";
+        String user = "";
+        String sqlpassword = "";
         
         try {
 			myConn = DriverManager.getConnection(url,user,sqlpassword);
