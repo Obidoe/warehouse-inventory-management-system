@@ -20,7 +20,7 @@ import com.mongodb.client.model.Updates;
 public class LoginSystem {
 		
 	//connection string for MongoDB
-	String uri = "";
+	String uri = "mongodb+srv://admin:fWj3n2qMP9zqvA3w@cluster0.id3dh70.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 	static MongoDatabase database;
 	static MongoCollection<Document> collection;
 	

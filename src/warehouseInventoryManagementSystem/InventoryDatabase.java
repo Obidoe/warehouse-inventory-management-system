@@ -27,9 +27,9 @@ public class InventoryDatabase {
 	public void establishConnection() {
 		
 		
-        String url = "";
-        String user = "";
-        String sqlpassword = "";
+        String url = "jdbc:mysql://localhost/inventory";
+        String user = "root";
+        String sqlpassword = "2g01sE8j2xfU";
         
         try {
 			myConn = DriverManager.getConnection(url,user,sqlpassword);
@@ -141,12 +141,19 @@ public class InventoryDatabase {
 		Statement stmt = myConn.createStatement();
 		String sql = "select * from item";
 		ResultSet rs = stmt.executeQuery(sql);
+		int i = 0;
+		
 		
 		System.out.println("\nLow stock notifications: ");
 		while (rs.next()) {
 			if (rs.getInt(4) < 3) {
 				System.out.println(rs.getString(6) + ", your product: " + rs.getString(2) + " has low stock. Current stock is: " + rs.getInt(4));
+				i++;
 			}
+		}
+		
+		if (i == 0) {
+			System.out.println("None.");
 		}
 		} catch (Exception e) 
 		 {System.err.println("Got an exception! ");
